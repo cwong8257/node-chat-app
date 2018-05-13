@@ -8,6 +8,7 @@
   "plugins": ["import", "jest"],
   "rules": {
     "prefer-arrow-callback": "off",
-    "func-names": "off"
+    "func-names": "off",
+    "no-console": "off"
   }
 }
