@@ -1,4 +1,4 @@
-/* global io, moment */
+/* global io, moment, Handlebars */
 
 const socket = io();
 
@@ -12,24 +12,28 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (message) {
   const formattedTime = moment(message.createdAt).format('h:mm a');
-  const li = document.createElement('li');
-  li.innerText = `${message.from} ${formattedTime}: ${message.text}`;
+  const source = document.getElementById('message-template').innerHTML;
+  const template = Handlebars.compile(source);
+  const html = template({
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime,
+  });
 
-  document.getElementById('messages').appendChild(li);
+  document.getElementById('messages').insertAdjacentHTML('beforeend', html);
 });
 
 socket.on('newLocationMessage', function (message) {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
   const formattedTime = moment(message.createdAt).format('h:mm a');
+  const source = document.getElementById('location-message-template').innerHTML;
+  const template = Handlebars.compile(source);
+  const html = template({
+    url: message.url,
+    from: message.from,
+    createdAt: formattedTime,
+  });
 
-  a.setAttribute('target', '_blank');
-  a.setAttribute('href', message.url);
-  a.innerText = 'My current location';
-  li.innerText = `${message.from} ${formattedTime}: `;
-  li.appendChild(a);
-
-  document.getElementById('messages').appendChild(li);
+  document.getElementById('messages').insertAdjacentHTML('beforeend', html);
 });
 
 document.getElementById('message-form').addEventListener('submit', function (e) {
