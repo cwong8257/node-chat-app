@@ -2,9 +2,10 @@
   "extends": "airbnb-base",
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "jest/globals": true
   },
-  "plugins": ["import"],
+  "plugins": ["import", "jest"],
   "rules": {
     "prefer-arrow-callback": "off",
     "func-names": "off"
