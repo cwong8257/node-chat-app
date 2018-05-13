@@ -1,4 +1,4 @@
-/* global io */
+/* global io, moment */
 
 const socket = io();
 
@@ -11,9 +11,9 @@ socket.on('disconnect', function () {
 });
 
 socket.on('newMessage', function (message) {
-  console.log('New Message', message);
+  const formattedTime = moment(message.createdAt).format('h:mm a');
   const li = document.createElement('li');
-  li.innerText = `${message.from}: ${message.text}`;
+  li.innerText = `${message.from} ${formattedTime}: ${message.text}`;
 
   document.getElementById('messages').appendChild(li);
 });
@@ -21,11 +21,12 @@ socket.on('newMessage', function (message) {
 socket.on('newLocationMessage', function (message) {
   const li = document.createElement('li');
   const a = document.createElement('a');
+  const formattedTime = moment(message.createdAt).format('h:mm a');
 
   a.setAttribute('target', '_blank');
   a.setAttribute('href', message.url);
   a.innerText = 'My current location';
-  li.innerText = `${message.from}: `;
+  li.innerText = `${message.from} ${formattedTime}: `;
   li.appendChild(a);
 
   document.getElementById('messages').appendChild(li);
