@@ -1,4 +1,4 @@
-/* global io, moment, Handlebars */
+/* global io, moment, Handlebars, deparam */
 
 const socket = io();
 
@@ -20,7 +20,16 @@ function scrollToBottom() {
 }
 
 socket.on('connect', function () {
-  console.log('Connected to server');
+  const params = deparam(window.location.search);
+
+  socket.emit('join', params, function (err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
 });
 
 socket.on('disconnect', function () {
@@ -39,6 +48,24 @@ socket.on('newMessage', function (message) {
 
   document.getElementById('messages').insertAdjacentHTML('beforeend', html);
   scrollToBottom();
+});
+
+socket.on('updateUserList', function (users) {
+  const usersElem = document.getElementById('users');
+  const ol = document.createElement('ol');
+
+  users.forEach(function (user) {
+    const li = document.createElement('li');
+    li.innerText = user;
+    ol.appendChild(li);
+  });
+  console.log(ol);
+
+  if (usersElem.firstChild) {
+    usersElem.firstChild.remove();
+  }
+
+  document.getElementById('users').appendChild(ol);
 });
 
 socket.on('newLocationMessage', function (message) {
