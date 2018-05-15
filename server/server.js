@@ -17,20 +17,22 @@ const users = new Users();
 app.use(express.static(publicPath));
 
 io.on('connection', (socket) => {
-  socket.on('join', (params, callback) => {
-    if (!isRealString(params.name) || !isRealString(params.room)) {
+  socket.on('join', ({ name, room }, callback) => {
+    if (!isRealString(name) || !isRealString(room)) {
       callback('Name and room name are required.');
     } else {
-      socket.join(params.room);
+      const lowerCaseRoom = room.toLowerCase();
+      socket.join(lowerCaseRoom);
       users.removeUser(socket.id);
-      users.addUser(socket.id, params.name, params.room);
+      users.addUser(socket.id, name, lowerCaseRoom);
 
-      io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+      io.to(lowerCaseRoom).emit('updateUserList', users.getUserList(lowerCaseRoom));
       socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
       socket.broadcast
-        .to(params.room)
-        .emit('newMessage', generateMessage('Admin', `${params.name} joined the chat`));
+        .to(lowerCaseRoom)
+        .emit('newMessage', generateMessage('Admin', `${name} joined the chat`));
+
       callback();
     }
   });
