@@ -87,16 +87,9 @@ document.getElementById('message-form').addEventListener('submit', function (e) 
 
   const messageTextbox = e.target.message;
 
-  socket.emit(
-    'createMessage',
-    {
-      from: 'User',
-      text: messageTextbox.value,
-    },
-    function () {
-      messageTextbox.value = '';
-    },
-  );
+  socket.emit('createMessage', messageTextbox.value, function () {
+    messageTextbox.value = '';
+  });
 });
 
 const locationButton = document.getElementById('send-location');
